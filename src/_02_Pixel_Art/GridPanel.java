@@ -3,11 +3,20 @@ package _02_Pixel_Art;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.swing.JPanel;
 
-public class GridPanel extends JPanel{
 
+public class GridPanel extends JPanel implements Serializable{
+	private static final String DATA_FILE = "src/saveGrid.dat";
+	
 	private static final long serialVersionUID = 1L;
 	private int windowWidth;
 	private int windowHeight;
@@ -20,6 +29,10 @@ public class GridPanel extends JPanel{
 	Pixel pixels[][];
 	
 	private Color color;
+	
+	public GridPanel() {
+		load();
+	}
 	
 	public GridPanel(int w, int h, int r, int c) {
 		this.windowWidth = w;
@@ -59,6 +72,33 @@ public class GridPanel extends JPanel{
 		pixels[mouseX/pixelWidth][mouseY/pixelHeight].color = color;
 		
 	}
+	
+	public void save() { //GridPanel data) {
+		try (FileOutputStream fos = new FileOutputStream(new File(DATA_FILE)); 
+				ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+			System.out.println("Saving file");
+			oos.writeObject(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static GridPanel load() {
+		try (FileInputStream fis = new FileInputStream(new File(DATA_FILE)); 
+				ObjectInputStream ois = new ObjectInputStream(fis)) {
+			System.out.println("loading file");
+			return (GridPanel) ois.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} catch (ClassNotFoundException e) {
+			// This can occur if the object we read from the file is not
+			// an instance of any recognized class
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	
 	@Override
 	public void paintComponent(Graphics g) {
