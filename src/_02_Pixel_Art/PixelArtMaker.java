@@ -1,5 +1,7 @@
 package _02_Pixel_Art;
 
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +36,11 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 	public void submitGridData(int w, int h, int r, int c, boolean load) {
 		//might just need to check for the existence of the file
 		if(load) {
-			gp = new GridPanel(); //overloaded GridPanel constructor will load data from save file
+//			gp = new GridPanel(); //overloaded GridPanel constructor will load data from save file
+			GridData gd = GridPanel.load();
+			gp = new GridPanel(gd);
+			
+			
 		}
 		else {
 			gp = new GridPanel(w, h, r, c);
@@ -80,7 +86,27 @@ public class PixelArtMaker implements MouseListener, ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		// call save
-		gp.save();
+		GridData gd = new GridData();
+		gd.windowWidth =gp.windowWidth;
+		gd.windowHeight = gp.windowHeight;
+		gd.rows = gp.rows;
+		gd.cols = gp.cols;
+		
+		gd.pixelWidth = gp.pixelWidth;
+		gd.pixelHeight = gp.pixelHeight;
+		
+		
+		//2. Initialize the pixel array using the rows and cols variables.
+		gd.pixels = new Pixel[gp.cols][gp.rows];
+		for(int row = 0; row<gp.rows; row++)
+		{
+			for(int col = 0; col<gp.cols; col++)
+			{
+				gd.pixels[col][row] = gp.pixels[col][row];
+			}
+		}
+		
+		gp.save(gd);
 		
 	}	
 }

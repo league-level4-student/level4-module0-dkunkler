@@ -18,21 +18,48 @@ public class GridPanel extends JPanel implements Serializable{
 	private static final String DATA_FILE = "src/saveGrid.dat";
 	
 	private static final long serialVersionUID = 1L;
-	private int windowWidth;
-	private int windowHeight;
-	private int pixelWidth;
-	private int pixelHeight;
-	private int rows;
-	private int cols;
+	public int windowWidth;
+	public int windowHeight;
+	public int pixelWidth;
+	public int pixelHeight;
+	public int rows;
+	public int cols;
 	
 	//1. Create a 2D array of pixels. Do not initialize it yet.
 	Pixel pixels[][];
 	
 	private Color color;
 	
-	public GridPanel() {
-		load();
+	public GridPanel(GridData gd) {
+		this.windowWidth = gd.windowWidth;
+		this.windowHeight = gd.windowHeight;
+		this.rows = gd.rows;
+		this.cols = gd.cols;
+		
+		this.pixelWidth = windowWidth / cols;
+		this.pixelHeight = windowHeight / rows;
+		
+		color = Color.BLACK;
+		
+		setPreferredSize(new Dimension(windowWidth, windowHeight));
+		
+		//2. Initialize the pixel array using the rows and cols variables.
+		pixels = new Pixel[cols][rows];
+		for(int row = 0; row<rows; row++)
+		{
+			for(int col = 0; col<cols; col++)
+			{
+				pixels[col][row] = gd.pixels[col][row];
+			}
+		}
+		
+		//3. Iterate through the array and initialize each element to a new pixel.
+		
+		
 	}
+	
+	
+	
 	
 	public GridPanel(int w, int h, int r, int c) {
 		this.windowWidth = w;
@@ -73,21 +100,21 @@ public class GridPanel extends JPanel implements Serializable{
 		
 	}
 	
-	public void save() { //GridPanel data) {
+	public void save(GridData data) {
 		try (FileOutputStream fos = new FileOutputStream(new File(DATA_FILE)); 
 				ObjectOutputStream oos = new ObjectOutputStream(fos)) {
 			System.out.println("Saving file");
-			oos.writeObject(this);
+			oos.writeObject(data);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static GridPanel load() {
+	public static GridData load() {
 		try (FileInputStream fis = new FileInputStream(new File(DATA_FILE)); 
 				ObjectInputStream ois = new ObjectInputStream(fis)) {
 			System.out.println("loading file");
-			return (GridPanel) ois.readObject();
+			return (GridData) ois.readObject();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
